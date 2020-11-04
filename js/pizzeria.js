@@ -41,7 +41,7 @@ function replaceClass(id, attr){
 }
 
 function setData(){
-    var url = "https://raw.githubusercontent.com/madarme/persistencia/main/pizza.json";
+    var url = "https://raw.githubusercontent.com/Lenny-UFPS/pizzeria/master/persistencia/main/pizza.json";
     let params = new URLSearchParams(location.search);
     let tamaños = params.getAll("pizza");
     let cantidad = params.get("cantidad");
@@ -165,13 +165,13 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
     var finalMessage = "<div class='flex flex-col inter mt-12'>"
     + "<table class='min-w-full divide-y divide-gray-200'>"
     + "<thead>"
-    + "<tr>"
+    + "<tr class='bg-gray-100'>"
     + "<th class='px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider'>descripción</th>"
     + "<th class='px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider'>valor</th>"
     + "</tr>"
     + "</thead>"
     + "<tbody class='bg-white divide-y divide-gray-200'>";
-    var url = "https://raw.githubusercontent.com/madarme/persistencia/main/pizza.json";
+    var url = "https://raw.githubusercontent.com/Lenny-UFPS/pizzeria/master/persistencia/main/pizza.json";
     var total = 0;
     var params = new URLSearchParams(location.search);
     var cantidad = params.get("cantidad"); // cantidad de pizzas
@@ -223,7 +223,7 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
                         break;
                     }
     
-                    case 'Vegeteriana': {
+                    case 'Vegetariana': {
                         msg += " Vegetariana";
                         adicional1 += "Vegetariana";
                         if(tamaño === 'Pequeña') tmp1 = pizzas[3].precio[0].precio;
@@ -265,7 +265,7 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
                         break;
                     }
     
-                    case 'Vegeteriana': {
+                    case 'Vegetariana': {
                         msg += " Vegetariana ";
                         adicional1 += "Vegetariana";
                         if(tamaño === 'Pequeña') tmp1 = pizzas[3].precio[0].precio;
@@ -308,7 +308,7 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
                         break;
                     }
     
-                    case 'Vegeteriana': {
+                    case 'Vegetariana': {
                         msg += "Vegetariana ";
                         adicional2 += "Vegetariana";
                         if(tamaño === 'Pequeña') tmp2 = pizzas[3].precio[0].precio;
@@ -333,7 +333,7 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
                 mayor = tmp2;
             }
 
-            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("es-CO", {style: "currency", currency: "COP"}).format(mayor) + "</td></tr>";
+            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(mayor) + "</td></tr>";
     
             let check1 = params.getAll(ch1); // Obtener valores de los primeros checkbox
             let check2 = params.getAll(ch2); // Obtener valores de los segundos checkbox
@@ -343,17 +343,21 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
                     finalMessage += "<tr><td class='px-6 py-4 whitespace-no-wrap'>" + adicional1 + "-" + check1[j] + "</td>";
                     if(datos.adicional[0].nombre_ingrediente === check1[j]){
                         tmp1 = datos.adicional[0].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("es-CO", {style: "currency", currency: "COP"}).format(tmp1) + "</td></tr>";
+                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
                         total += tmp1;
                     }
                     else if(datos.adicional[1].nombre_ingrediente === check1[j]){
                         tmp1 = datos.adicional[1].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("es-CO", {style: "currency", currency: "COP"}).format(tmp1) + "</td></tr>";
+                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
                         total += tmp1;
                     }
                     else if(datos.adicional[2].nombre_ingrediente === check1[j]){
                         tmp1 = datos.adicional[2].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("es-CO", {style: "currency", currency: "COP"}).format(tmp1) + "</td></tr>";
+                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
+                        total += tmp1;
+                    }else{
+                        tmp1 = datos.adicional[3].valor;
+                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
                         total += tmp1;
                     }
                 }
@@ -363,20 +367,25 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
 
             if(check2.length > 0){
                 for(let j = 0; j < check2.length; j++){
+                    console.log(check2[j]);
                     finalMessage += "<tr><td class='px-6 py-4 whitespace-no-wrap'>" + adicional2 + "-" + check2[j] + "</td>";
                     if(datos.adicional[0].nombre_ingrediente === check2[j]){
                         tmp2 = datos.adicional[0].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("es-CO", {style: "currency", currency: "COP"}).format(tmp2) + "</td></tr>";
+                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
                         total += tmp2;
                     }
                     else if(datos.adicional[1].nombre_ingrediente === check2[j]){
                         tmp2 = datos.adicional[1].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("es-CO", {style: "currency", currency: "COP"}).format(tmp2) + "</td></tr>";
+                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
                         total += tmp2;
                     }
                     else if(datos.adicional[2].nombre_ingrediente === check2[j]){
                         tmp2 = datos.adicional[2].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("es-CO", {style: "currency", currency: "COP"}).format(tmp2) + "</td></tr>";
+                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
+                        total += tmp2;
+                    }else{
+                        tmp2 = datos.adicional[3].valor;
+                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
                         total += tmp2;
                     }
                 }
@@ -384,8 +393,8 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
                 console.log("En la fila " + i + " No hay adicional para la opción 2");
             }
         }
-        finalMessage += "<tr><td class='px-6 py-4 whitespace-no-wrap'>Total:</td>"
-        + "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("es-CO", {style: "currency", currency: "COP"}).format(total) + "</td></tr>";
+        finalMessage += "<tr class='bg-gray-100'><td class='px-6 py-4 whitespace-no-wrap'>Total:</td>"
+        + "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(total) + "</td></tr>";
         finalMessage += "</tbody></table>";
         document.getElementById("showBill").innerHTML = finalMessage;
         console.log(total);
