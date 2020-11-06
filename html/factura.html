@@ -10,12 +10,12 @@
     <script src="../js/pizzeria.js"></script>
     <title>Title</title>
 </head>
-<body onload="createBill()">
+<body onload="createTitle(), createBill()">
     <!-- Navbar -->
     <div class="flex inter pt-12 px-8 justify-between items-start">
         <a href="../index.html" class="flex items-center">
             <img src="../images/pizza.png" alt="pizza icon" class="w-12 h-12 rounded-full object-cover object-left-bottom">
-            <p class="ml-2 font-semibold text-2xl tracking-tighter">JB Pizza</p>
+            <p class="ml-2 font-semibold text-2xl tracking-tighter" id="title"></p>
         </a>
 
         <div class="flex flex-col inter">

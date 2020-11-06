@@ -10,12 +10,12 @@
     <script src="js/pizzeria.js"></script>
     <title>Title</title>
 </head>
-<body>
+<body class="antialised" onload="createTitle()">
     <!-- Navbar -->
     <div class="flex inter pt-12 px-8 justify-between items-start">
         <a href="index.html" class="flex items-center">
             <img src="images/pizza.png" alt="pizza icon" class="w-12 h-12 rounded-full object-cover object-left-bottom">
-            <p class="ml-2 font-semibold text-2xl tracking-tighter">JB Pizza</p>
+            <p class="ml-2 font-semibold text-2xl tracking-tighter" id="title"></p>
         </a>
 
         <div class="flex flex-col inter">
@@ -75,7 +75,7 @@
 
     </form>
 
-    <div class="mt-12 justify-end py-4 w-10/12 mx-auto hidden" id="load_options">
+    <div class="py-12 justify-end w-10/12 mx-auto hidden" id="load_options">
         <button type="submit" form="canPizza" class="px-6 py-3 font-bold tracking-tight rounded-sm leading-none inter" style="background-color: #FFC727;">Cargar Opciones</button>
         <!-- <a href="html/opciones.html" class="px-6 py-3 font-bold tracking-tight rounded-sm leading-none inter" style="background-color: #FFC727;">Cargar Opciones</a>  -->
     </div>

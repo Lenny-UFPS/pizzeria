@@ -8,6 +8,13 @@ async function leerJSON(url) {
     }
   }
 
+  function createTitle(){
+      var url = "https://raw.githubusercontent.com/madarme/persistencia/main/pizza.json";
+      leerJSON(url).then(datos => {
+        document.getElementById("title").innerHTML = "<p class='ml-2 font-semibold text-2xl tracking-tighter' id='title'>" + datos.nombrePizzeria + "</p>";
+      })
+  }
+
 function crearComponentes(){ // No se requiere aún leer datos del JSON --> Pizzería QQTA
     var cantidad = document.getElementById("cantidad").value;
     var result = "";
@@ -27,13 +34,13 @@ function crearComponentes(){ // No se requiere aún leer datos del JSON --> Pizz
         + "</div></div></div>";
     }
     component.innerHTML = result;
-    replaceClass('load_options', 'flex mt-12 justify-end py-4 w-10/12 mx-auto'); // Mostrar botón
+    replaceClass('load_options', 'flex py-12 justify-end py-4 w-10/12 mx-auto'); // Mostrar botón
 }
 
 function clean(attr1, attr2){
     document.getElementById(attr1).value = '';
     document.getElementById(attr2).innerHTML = '';
-    replaceClass('load_options', 'mt-12 justify-end py-4 w-10/12 mx-auto hidden'); // Esconder botón
+    replaceClass('load_options', 'py-12 justify-end py-4 w-10/12 mx-auto hidden'); // Esconder botón
 }
 
 function replaceClass(id, attr){
@@ -41,7 +48,7 @@ function replaceClass(id, attr){
 }
 
 function setData(){
-    var url = "https://raw.githubusercontent.com/Lenny-UFPS/pizzeria/master/persistencia/main/pizza.json";
+    var url = "https://raw.githubusercontent.com/madarme/persistencia/main/pizza.json";
     let params = new URLSearchParams(location.search);
     let tamaños = params.getAll("pizza");
     let cantidad = params.get("cantidad");
@@ -54,7 +61,7 @@ function setData(){
             msg += "<div class='flex items-center'>"
                 + "<p>Escoja sabores para la pizza " + i + " (puede escoger uno o dos):</p>"
                 + "<div class='relative ml-4'>"
-                + "<select name='pizza1' class='py-2 border border-gray-300 rounded-md appearance-none pr-8 pl-3' onclick='setName(" + i + ", this.value)'>"; // Primer select para los sabores
+                + "<select name='pizza1' class='py-2 border border-gray-300 rounded-md appearance-none pr-8 pl-3' onclick='setName(" + i + ", this.value), changeImageURL(" + i + ", this.value)' onchange='listener(" + i + ", this.selectedIndex)'>"; // Primer select para los sabores
                 msg += crearOptionsSabores(datos.pizzas);
                 msg += "</select>"
                 + "<div class='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>"
@@ -62,7 +69,7 @@ function setData(){
                 + "</div></div>";
 
                 msg += "<div class='relative ml-4'>" // Segundo select
-                + "<select name='pizza2' id='" + i + "' onclick='optionsValue(this.id), setSecondName(" + i + ", this.value)' class='py-2 border border-gray-300 rounded-md appearance-none pr-8 pl-3'>";
+                + "<select name='pizza2' id='" + i + "' onclick='optionsValue(this.id), setSecondName(" + i + ", this.value), changeSecondURL(" + i + ", this.value)' class='py-2 border border-gray-300 rounded-md appearance-none pr-8 pl-3'>";
                 msg += crearOptionsSabores2(datos.pizzas);
                 msg += "</select>"
                 + "<div class='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>"
@@ -90,27 +97,87 @@ function setData(){
                 + "<p class='mt-2' id='p_" + i + "'>Ingredientes adicionales</p>"
                 + "<div class='flex items-center w-1/2'>"
                 + "<div class='flex items-center w-1/4'>"
-                + "<input type='checkbox' name='check_" + i + "' value='Tocineta' disabled>"
-                + "<label for='tocineta' class='ml-2'>Tocineta</label><br>"
+                + "<input type='checkbox' name='check_" + i + "' value='" + datos.adicional[0].nombre_ingrediente + "' disabled>"
+                + "<label for='tocineta' class='ml-2'>" + datos.adicional[0].nombre_ingrediente + "</label><br>"
                 + "</div>"
                 + "<div class='flex items-center w-1/4'>"
-                + "<input type='checkbox' name='check_" + i + "' value='Salami' disabled>"
-                + "<label for='salami' class='ml-2'>Salami</label><br>"
+                + "<input type='checkbox' name='check_" + i + "' value='" + datos.adicional[1].nombre_ingrediente + "' disabled>"
+                + "<label for='salami' class='ml-2'>" + datos.adicional[1].nombre_ingrediente + "</label><br>"
                 + "</div>"
                 + "<div class='flex items-center w-1/4'>"
-                + "<input type='checkbox' name='check_" + i + "' value='Oregano' disabled>"
-                + "<label for='oregano' class='ml-2'>Oregano</label><br>"
+                + "<input type='checkbox' name='check_" + i + "' value='" + datos.adicional[2].nombre_ingrediente + "' disabled>"
+                + "<label for='oregano' class='ml-2'>" + datos.adicional[2].nombre_ingrediente + "</label><br>"
                 + "</div>"
                 + "<div class='flex items-center w-1/4'>"
-                + "<input type='checkbox' name='check_" + i + "' value='Salchicha' disabled>"
-                + "<label for='salchicha' class='ml-2'>Salchicha</label><br>"
+                + "<input type='checkbox' name='check_" + i + "' value='" + datos.adicional[3].nombre_ingrediente + "' disabled>"
+                + "<label for='salchicha' class='ml-2'>" + datos.adicional[3].nombre_ingrediente + "</label><br>"
                 + "</div>"
                 + "</div>"
                 + "<input type='hidden' name='cantidad' value='" + cantidad + "'>"
+                + "<div class='flex items-center mt-4'><div class='w-1/3'><img class='object-cover object-center rounded-md h-64 hidden' src='' id='img-" + i + "'></div>"
+                + "<div class='w-1/3 ml-8'><img class='object-cover object-center rounded-md h-64 hidden' src='' id='img_" + i + "'></div></div>"
                 + "</div>";
         }
         component.innerHTML = msg;
     })
+}
+
+function changeImageURL(i, value){
+    let id = "img-" + i;
+    document.getElementById(id).classList.remove("hidden");
+    var url = "https://raw.githubusercontent.com/madarme/persistencia/main/pizza.json";
+    leerJSON(url).then(datos => {
+        for(let j = 0; j < datos.pizzas.length; j++){
+            if(datos.pizzas[j].sabor === value){
+                document.getElementById(id).setAttribute("src", datos.pizzas[j].url_Imagen);
+                break;
+            }
+        }
+    })
+}
+
+function changeSecondURL(i, value){
+    let id = "img_" + i;
+    if(value === "Ninguno") document.getElementById(id).classList.add("hidden");
+    else document.getElementById(id).classList.remove("hidden");
+    var url = "https://raw.githubusercontent.com/madarme/persistencia/main/pizza.json";
+    leerJSON(url).then(datos => {
+        for(let j = 0; j < datos.pizzas.length; j++){
+            if(datos.pizzas[j].sabor === value){
+                document.getElementById(id).setAttribute("src", datos.pizzas[j].url_Imagen);
+                break;
+            }
+        }
+    })
+}
+
+function listener(i, value){
+    //let change = document.getElementsByName("pizza1")[i - 1].options[value].value;
+    let select = document.getElementsByName("pizza1")[i - 1];
+    let select2 = document.getElementsByName("pizza2")[i - 1];
+    var img = "img" + i;
+    var bool = false;
+    console.log(value);
+
+    for(let j = 0; j < select.length - 1; j++){
+        if(select.options[j].value !== select2.options[j + 1].value){
+            bool = true;
+            let option = document.createElement("option");
+            option.text = select.options[j].value;
+            option.value = select.options[j].value;
+            select2.add(option, (j + 1));
+            break;
+        }
+    }
+
+    if(select.options[select.length - 1].value !== select2.options[select2.length - 1].value && !bool){
+        let option = document.createElement("option");
+        option.text = select.options[select.length - 1].value;
+        option.value = select.options[select.length - 1].value;
+        select2.add(option, select2.length);
+    }
+    
+    document.getElementsByName("pizza2")[i - 1].remove(value + 1);
 }
 
 function comentarios(){
@@ -149,7 +216,7 @@ function crearOptionsSabores(pizzas){
 
 function crearOptionsSabores2(pizzas){
     var msg = "<option value='Ninguno' selected>Ninguno</option>";
-    for(let i = 0; i < pizzas.length; i++){
+    for(let i = 1; i < pizzas.length; i++){
         msg += "<option value='" + pizzas[i].sabor + "'>" + pizzas[i].sabor + "</option>";
     }
     return msg;
@@ -171,7 +238,7 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
     + "</tr>"
     + "</thead>"
     + "<tbody class='bg-white divide-y divide-gray-200'>";
-    var url = "https://raw.githubusercontent.com/Lenny-UFPS/pizzeria/master/persistencia/main/pizza.json";
+    var url = "https://raw.githubusercontent.com/madarme/persistencia/main/pizza.json";
     var total = 0;
     var params = new URLSearchParams(location.search);
     var cantidad = params.get("cantidad"); // cantidad de pizzas
@@ -199,36 +266,36 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
                     case 'Napolitana': {
                         msg += " Napolitana";
                         adicional1 += "Napolitana";
-                        if(tamaño === 'Pequeña') tmp1 = pizzas[0].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp1 = pizzas[0].precio[2].precio;
                         if(tamaño === 'Mediana') tmp1 = pizzas[0].precio[1].precio;
-                        if(tamaño === 'Grande') tmp1 = pizzas[0].precio[2].precio;
+                        if(tamaño === 'Grande') tmp1 = pizzas[0].precio[0].precio;
                         break;
                     }
     
                     case 'Mexicana': {
                         msg += " Mexicana";
                         adicional1 += "Mexicana";
-                        if(tamaño === 'Pequeña') tmp1 = pizzas[1].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp1 = pizzas[1].precio[2].precio;
                         if(tamaño === 'Mediana') tmp1 = pizzas[1].precio[1].precio;
-                        if(tamaño === 'Grande') tmp1 = pizzas[1].precio[2].precio;
+                        if(tamaño === 'Grande') tmp1 = pizzas[1].precio[0].precio;
                         break;
                     }
     
                     case 'Hawayana': {
                         msg += " Hawayana";
                         adicional1 += "Hawayana";
-                        if(tamaño === 'Pequeña') tmp1 = pizzas[2].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp1 = pizzas[2].precio[2].precio;
                         if(tamaño === 'Mediana') tmp1 = pizzas[2].precio[1].precio;
-                        if(tamaño === 'Grande') tmp1 = pizzas[2].precio[2].precio;
+                        if(tamaño === 'Grande') tmp1 = pizzas[2].precio[0].precio;
                         break;
                     }
     
                     case 'Vegetariana': {
                         msg += " Vegetariana";
                         adicional1 += "Vegetariana";
-                        if(tamaño === 'Pequeña') tmp1 = pizzas[3].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp1 = pizzas[3].precio[2].precio;
                         if(tamaño === 'Mediana') tmp1 = pizzas[3].precio[1].precio;
-                        if(tamaño === 'Grande') tmp1 = pizzas[3].precio[2].precio;
+                        if(tamaño === 'Grande') tmp1 = pizzas[3].precio[0].precio;
                         break;
                     }
                 
@@ -241,36 +308,36 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
                     case 'Napolitana': {
                         msg += " Napolitana ";
                         adicional1 += "Napolitana";
-                        if(tamaño === 'Pequeña') tmp1 = pizzas[0].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp1 = pizzas[0].precio[2].precio;
                         if(tamaño === 'Mediana') tmp1 = pizzas[0].precio[1].precio;
-                        if(tamaño === 'Grande') tmp1 = pizzas[0].precio[2].precio;
+                        if(tamaño === 'Grande') tmp1 = pizzas[0].precio[0].precio;
                         break;
                     }
     
                     case 'Mexicana': {
                         msg += " Mexicana ";
                         adicional1 += "Mexicana";
-                        if(tamaño === 'Pequeña') tmp1 = pizzas[1].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp1 = pizzas[1].precio[2].precio;
                         if(tamaño === 'Mediana') tmp1 = pizzas[1].precio[1].precio;
-                        if(tamaño === 'Grande') tmp1 = pizzas[1].precio[2].precio;
+                        if(tamaño === 'Grande') tmp1 = pizzas[1].precio[0].precio;
                         break;
                     }
     
                     case 'Hawayana': {
                         msg += " Hawayana ";
                         adicional1 += "Hawayana";
-                        if(tamaño === 'Pequeña') tmp1 = pizzas[2].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp1 = pizzas[2].precio[2].precio;
                         if(tamaño === 'Mediana') tmp1 = pizzas[2].precio[1].precio;
-                        if(tamaño === 'Grande') tmp1 = pizzas[2].precio[2].precio;
+                        if(tamaño === 'Grande') tmp1 = pizzas[2].precio[0].precio;
                         break;
                     }
     
                     case 'Vegetariana': {
                         msg += " Vegetariana ";
                         adicional1 += "Vegetariana";
-                        if(tamaño === 'Pequeña') tmp1 = pizzas[3].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp1 = pizzas[3].precio[2].precio;
                         if(tamaño === 'Mediana') tmp1 = pizzas[3].precio[1].precio;
-                        if(tamaño === 'Grande') tmp1 = pizzas[3].precio[2].precio;
+                        if(tamaño === 'Grande') tmp1 = pizzas[3].precio[0].precio;
                         break;
                     }
                 
@@ -284,36 +351,36 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
                     case 'Napolitana': {
                         msg += "Napolitana ";
                         adicional2 += "Napolitana";
-                        if(tamaño === 'Pequeña') tmp2 = pizzas[0].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp2 = pizzas[0].precio[2].precio;
                         if(tamaño === 'Mediana') tmp2 = pizzas[0].precio[1].precio;
-                        if(tamaño === 'Grande') tmp2 = pizzas[0].precio[2].precio;
+                        if(tamaño === 'Grande') tmp2 = pizzas[0].precio[0].precio;
                         break;
                     }
     
                     case 'Mexicana': {
                         msg += "Mexicana ";
                         adicional2 += "Mexicana";
-                        if(tamaño === 'Pequeña') tmp2 = pizzas[1].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp2 = pizzas[1].precio[2].precio;
                         if(tamaño === 'Mediana') tmp2 = pizzas[1].precio[1].precio;
-                        if(tamaño === 'Grande') tmp2 = pizzas[1].precio[2].precio;
+                        if(tamaño === 'Grande') tmp2 = pizzas[1].precio[0].precio;
                         break;
                     }
     
                     case 'Hawayana': {
                         msg += "Hawayana ";
                         adicional2 += "Hawayana";
-                        if(tamaño === 'Pequeña') tmp2 = pizzas[2].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp2 = pizzas[2].precio[2].precio;
                         if(tamaño === 'Mediana') tmp2 = pizzas[2].precio[1].precio;
-                        if(tamaño === 'Grande') tmp2 = pizzas[2].precio[2].precio;
+                        if(tamaño === 'Grande') tmp2 = pizzas[2].precio[0].precio;
                         break;
                     }
     
                     case 'Vegetariana': {
                         msg += "Vegetariana ";
                         adicional2 += "Vegetariana";
-                        if(tamaño === 'Pequeña') tmp2 = pizzas[3].precio[0].precio;
+                        if(tamaño === 'Pequeña') tmp2 = pizzas[3].precio[2].precio;
                         if(tamaño === 'Mediana') tmp2 = pizzas[3].precio[1].precio;
-                        if(tamaño === 'Grande') tmp2 = pizzas[3].precio[2].precio;
+                        if(tamaño === 'Grande') tmp2 = pizzas[3].precio[0].precio;
                         break;
                     }
                 
