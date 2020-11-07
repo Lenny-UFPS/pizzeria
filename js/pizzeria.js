@@ -34,7 +34,7 @@ function crearComponentes(){ // No se requiere aún leer datos del JSON --> Pizz
         + "</div></div></div>";
     }
     component.innerHTML = result;
-    replaceClass('load_options', 'flex py-12 justify-end py-4 w-10/12 mx-auto'); // Mostrar botón
+    if(cantidad > 0) replaceClass('load_options', 'flex py-12 justify-end py-4 w-10/12 mx-auto'); // Mostrar botón
 }
 
 function clean(attr1, attr2){
@@ -60,7 +60,7 @@ function setData(){
             msg += "<div class='flex flex-col inter py-4 px-6 w-10/12 mx-auto border border-gray-300 rounded-lg mt-12 justify-start'>";
             msg += "<div class='flex items-center'>"
                 + "<p>Escoja sabores para la pizza " + i + " (puede escoger uno o dos):</p>"
-                + "<div class='relative ml-4'>"
+                + "<div class='relative ml-4'>" // Primer select
                 + "<select name='pizza1' class='py-2 border border-gray-300 rounded-md appearance-none pr-8 pl-3' onclick='setName(" + i + ", this.value), changeImageURL(" + i + ", this.value)' onchange='listener(" + i + ", this.selectedIndex)'>"; // Primer select para los sabores
                 msg += crearOptionsSabores(datos.pizzas);
                 msg += "</select>"
@@ -122,7 +122,7 @@ function setData(){
     })
 }
 
-function changeImageURL(i, value){
+function changeImageURL(i, value){ // Setear la URL de la imagen dinámicamente
     let id = "img-" + i;
     document.getElementById(id).classList.remove("hidden");
     var url = "https://raw.githubusercontent.com/madarme/persistencia/main/pizza.json";
@@ -136,10 +136,10 @@ function changeImageURL(i, value){
     })
 }
 
-function changeSecondURL(i, value){
+function changeSecondURL(i, value){ // Setear la URL de la imagen # 2 dinámicamente
     let id = "img_" + i;
-    if(value === "Ninguno") document.getElementById(id).classList.add("hidden");
-    else document.getElementById(id).classList.remove("hidden");
+    if(value === "Ninguno") document.getElementById(id).classList.add("hidden"); // Quitar la imagen
+    else document.getElementById(id).classList.remove("hidden"); // Mostrar las imágenes de los sabores
     var url = "https://raw.githubusercontent.com/madarme/persistencia/main/pizza.json";
     leerJSON(url).then(datos => {
         for(let j = 0; j < datos.pizzas.length; j++){
@@ -152,12 +152,10 @@ function changeSecondURL(i, value){
 }
 
 function listener(i, value){
-    //let change = document.getElementsByName("pizza1")[i - 1].options[value].value;
     let select = document.getElementsByName("pizza1")[i - 1];
     let select2 = document.getElementsByName("pizza2")[i - 1];
     var img = "img" + i;
     var bool = false;
-    console.log(value);
 
     for(let j = 0; j < select.length - 1; j++){
         if(select.options[j].value !== select2.options[j + 1].value){
@@ -178,14 +176,6 @@ function listener(i, value){
     }
     
     document.getElementsByName("pizza2")[i - 1].remove(value + 1);
-}
-
-function comentarios(){
-    // Los check, para extraer la data en la factura con un ciclo de i = 1 hasta <= cantidad
-    // Los tamaños de la pizza se sacan con un getAll("tamaño") --> Se maneja más fácil siendo un array
-    // Los sabores se sacan con un getAll --> "pizza1 || pizza2"
-    // Los adicionales falta acomodarlos para sacarlos del JSON, para ver bien el proceso lo hice fast por defecto
-    // Falta revisar qué valores llegan a "factura.html" para acomodar precios al final
 }
 
 function setName(i, value){ // Acomodar el nombre de la pizza en el primer componente 
@@ -408,24 +398,32 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
             if(check1.length > 0){
                 for(let j = 0; j < check1.length; j++){
                     finalMessage += "<tr><td class='px-6 py-4 whitespace-no-wrap'>" + adicional1 + "-" + check1[j] + "</td>";
-                    if(datos.adicional[0].nombre_ingrediente === check1[j]){
-                        tmp1 = datos.adicional[0].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
-                        total += tmp1;
-                    }
-                    else if(datos.adicional[1].nombre_ingrediente === check1[j]){
-                        tmp1 = datos.adicional[1].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
-                        total += tmp1;
-                    }
-                    else if(datos.adicional[2].nombre_ingrediente === check1[j]){
-                        tmp1 = datos.adicional[2].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
-                        total += tmp1;
-                    }else{
-                        tmp1 = datos.adicional[3].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
-                        total += tmp1;
+                    switch(check1[j]){
+                        case 'Tocineta': {
+                            tmp1 = datos.adicional[0].valor;
+                            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
+                            total += tmp1;
+                            break;    
+                        }
+                        case 'Salami': {
+                            tmp1 = datos.adicional[1].valor;
+                            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
+                            total += tmp1;
+                            break;
+                        }
+                        case 'Oregano': {
+                            tmp1 = datos.adicional[2].valor;
+                            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
+                            total += tmp1;
+                            break;
+                        }
+                        case 'Salchicha': {
+                            tmp1 = datos.adicional[3].valor;
+                            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp1) + "</td></tr>";
+                            total += tmp1;
+                            break;
+                        }
+                        default: break;
                     }
                 }
             }else{
@@ -434,32 +432,40 @@ function createBill(){ // Armar la facturación del pedido --> Recordar que se o
 
             if(check2.length > 0){
                 for(let j = 0; j < check2.length; j++){
-                    console.log(check2[j]);
                     finalMessage += "<tr><td class='px-6 py-4 whitespace-no-wrap'>" + adicional2 + "-" + check2[j] + "</td>";
-                    if(datos.adicional[0].nombre_ingrediente === check2[j]){
-                        tmp2 = datos.adicional[0].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
-                        total += tmp2;
-                    }
-                    else if(datos.adicional[1].nombre_ingrediente === check2[j]){
-                        tmp2 = datos.adicional[1].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
-                        total += tmp2;
-                    }
-                    else if(datos.adicional[2].nombre_ingrediente === check2[j]){
-                        tmp2 = datos.adicional[2].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
-                        total += tmp2;
-                    }else{
-                        tmp2 = datos.adicional[3].valor;
-                        finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
-                        total += tmp2;
+                    switch(check2[j]){
+                        case 'Tocineta': {
+                            tmp2 = datos.adicional[0].valor;
+                            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
+                            total += tmp2;
+                            break;    
+                        }
+                        case 'Salami': {
+                            tmp2 = datos.adicional[1].valor;
+                            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
+                            total += tmp2;
+                            break;
+                        }
+                        case 'Oregano': {
+                            tmp2 = datos.adicional[2].valor;
+                            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
+                            total += tmp2;
+                            break;
+                        }
+                        case 'Salchicha': {
+                            tmp2 = datos.adicional[3].valor;
+                            finalMessage += "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(tmp2) + "</td></tr>";
+                            total += tmp2;
+                            break;
+                        }
+                        default: break;
                     }
                 }
             }else{
                 console.log("En la fila " + i + " No hay adicional para la opción 2");
             }
         }
+        
         finalMessage += "<tr class='bg-gray-100'><td class='px-6 py-4 whitespace-no-wrap'>Total:</td>"
         + "<td class='px-6 py-4 whitespace-no-wrap'>" + new Intl.NumberFormat("en-US", {style: "currency", currency: "USD"}).format(total) + "</td></tr>";
         finalMessage += "</tbody></table>";
